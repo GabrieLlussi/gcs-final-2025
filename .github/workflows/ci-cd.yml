@@ -1,4 +1,4 @@
-name: CI/CD Pipeline - GCS
+name: CI/CD GCS
 
 on:
   push:
@@ -10,20 +10,20 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Clonar repositório
+      - name: Checkout do código
         uses: actions/checkout@v3
 
       - name: Instalar Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.12
+          python-version: 3.11
 
       - name: Instalar dependências
         run: |
           pip install -r requirements.txt
           pip install pytest
 
-      - name: Executar testes
+      - name: Rodar testes
         run: pytest test_app.py
 
   deploy-homolog:
@@ -31,14 +31,14 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy para Homologação
+      - name: Deploy para Homolog
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOMOLOG_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~/homolog/crud_tarefas/GCS
+            cd ~/homolog/GCS
             git pull origin homolog
             docker-compose down
             docker-compose up -d --build
@@ -55,7 +55,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~/prod/crud_tarefas/GCS
+            cd ~/prod/GCS
             git pull origin main
             docker-compose down
             docker-compose up -d --build
