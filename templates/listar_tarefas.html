@@ -1,0 +1,83 @@
+{# templates/listar_tarefas.html #}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Tarefas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> {# Link para CSS (opcional) #}
+</head>
+<body>
+    <h1>Lista de Tarefas</h1>
+
+    {# Exibir flash messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <p>
+        <a href="{{ url_for('adicionar_tarefa') }}">Adicionar Nova Tarefa</a> |
+        {# Link para Exportar para PDF - inclui os filtros atuais na URL #}
+        <a href="{{ url_for('exportar_pdf', filtro_descricao=filtro_descricao, filtro_situacao=filtro_situacao) }}">Exportar para PDF</a> |
+        <a href="{{ url_for('logout') }}">Sair</a> {# Link para Logout #}
+    </p>
+
+    {# Formulário de Filtro (mantido como antes) #}
+    <h2>Filtrar Tarefas</h2>
+    <form method="GET" action="{{ url_for('listar_tarefas') }}">
+        <div>
+            <label for="filtro_descricao">Descrição:</label>
+            <input type="text" id="filtro_descricao" name="filtro_descricao" value="{{ filtro_descricao or '' }}">
+        </div>
+        <div>
+            <label for="filtro_situacao">Situação:</label>
+            <select id="filtro_situacao" name="filtro_situacao">
+                <option value="">-- Selecione --</option>
+                <option value="Pendente" {% if filtro_situacao == 'Pendente' %}selected{% endif %}>Pendente</option>
+                <option value="Em andamento" {% if filtro_situacao == 'Em andamento' %}selected{% endif %}>Em andamento</option>
+                <option value="Concluído" {% if filtro_situacao == 'Concluído' %}selected{% endif %}>Concluído</option>
+            </select>
+        </div>
+        <button type="submit">Aplicar Filtro</button>
+        <a href="{{ url_for('listar_tarefas') }}"><button type="button">Limpar Filtros</button></a>
+    </form>
+
+    <hr>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descrição</th>
+                <th>Data de Criação</th>
+                <th>Data Prevista</th>
+                <th>Data de Encerramento</th>
+                <th>Situação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tarefa in tarefas %}
+            <tr>
+                <td>{{ tarefa.id }}</td>
+                <td>{{ tarefa.descricao }}</td>
+                <td>{{ tarefa.data_criacao }}</td>
+                <td>{{ tarefa.data_prevista or '' }}</td>
+                <td>{{ tarefa.data_encerramento or '' }}</td>
+                <td>{{ tarefa.situacao }}</td>
+                <td>
+                    <a href="{{ url_for('editar_tarefa', id=tarefa.id) }}">Editar</a>
+                    <form action="{{ url_for('excluir_tarefa', id=tarefa.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta tarefa?');">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

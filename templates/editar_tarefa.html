@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editar Tarefa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> {# Link para CSS (opcional) #}
+</head>
+<body>
+    <h1>Editar Tarefa</h1>
+
+    {# Exibir flash messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div>
+            <label for="descricao">Descrição:</label>
+            <input type="text" id="descricao" name="descricao" value="{{ tarefa.descricao }}" required>
+        </div>
+        <div>
+            <label for="data_prevista">Data Prevista:</label>
+            <input type="date" id="data_prevista" name="data_prevista" value="{{ tarefa.data_prevista or '' }}" required>
+        </div>
+        <div>
+            <label for="data_encerramento">Data de Encerramento:</label>
+            <input type="date" id="data_encerramento" name="data_encerramento" value="{{ tarefa.data_encerramento or '' }}">
+        </div>
+        <div>
+            <label for="situacao">Situação:</label>
+            <select id="situacao" name="situacao" required>
+                <option value="Pendente" {% if tarefa.situacao == 'Pendente' %}selected{% endif %}>Pendente</option>
+                <option value="Em andamento" {% if tarefa.situacao == 'Em andamento' %}selected{% endif %}>Em andamento</option>
+                <option value="Concluído" {% if tarefa.situacao == 'Concluído' %}selected{% endif %}>Concluído</option>
+            </select>
+        </div>
+        <button type="submit">Atualizar Tarefa</button>
+    </form>
+    <p><a href="{{ url_for('listar_tarefas') }}">Voltar para a Lista</a></p>
+</body>
+</html>
