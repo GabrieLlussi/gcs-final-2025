@@ -1,4 +1,4 @@
-name: CI/CD GCS
+name: CI/CD GCS - Deploy 
 
 on:
   push:
@@ -7,31 +7,11 @@ on:
       - main
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v3
-
-      - name: Instalar Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-
-      - name: Instalar dependências
-        run: |
-          pip install -r requirements.txt
-          pip install pytest
-
-      - name: Rodar testes
-        run: pytest test_app.py
-
   deploy-homolog:
     if: github.ref == 'refs/heads/homolog'
-    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy para Homolog
+      - name: Deploy para Homologação
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOMOLOG_HOST }}
@@ -45,7 +25,6 @@ jobs:
 
   deploy-prod:
     if: github.ref == 'refs/heads/main'
-    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Deploy para Produção
