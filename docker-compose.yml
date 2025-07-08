@@ -4,9 +4,9 @@ services:
   app:
     build: .
     ports:
-      - "5000:5000"
+      - "${PORT:-5000}:5000"
     volumes:
       - .:/app
     environment:
-      - ENV=local
+      - ENV=${ENV:-local}
     container_name: gcs-app
