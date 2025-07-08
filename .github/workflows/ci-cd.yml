@@ -17,6 +17,7 @@ jobs:
           host: ${{ secrets.HOMOLOG_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          passphrase: ""
           script: |
             cd ~/homolog/GCS
             git pull origin homolog
@@ -33,6 +34,7 @@ jobs:
           host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          passphrase: ""
           script: |
             cd ~/prod/GCS
             git pull origin main
