@@ -10,7 +10,6 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 import io
 import os
 
-#
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta_para_sessao'
 
