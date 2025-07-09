@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-    deploy-homolog:
+  deploy-homolog:
     if: github.ref == 'refs/heads/homolog'
     runs-on: self-hosted
     steps:
