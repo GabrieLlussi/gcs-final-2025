@@ -5,5 +5,4 @@ __pycache__/
 *.sqlite
 *.log
 venv/
-.env
 tarefas*.db
