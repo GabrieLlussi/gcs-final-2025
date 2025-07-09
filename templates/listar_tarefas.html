@@ -1,83 +1,102 @@
-{# templates/listar_tarefas.html #}
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
     <title>Lista de Tarefas</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> {# Link para CSS (opcional) #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Lista de Tarefas</h1>
+<body class="bg-light">
 
-    {# Exibir flash messages #}
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flashes">
-            {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-
-    <p>
-        <a href="{{ url_for('adicionar_tarefa') }}">Adicionar Nova Tarefa</a> |
-        {# Link para Exportar para PDF - inclui os filtros atuais na URL #}
-        <a href="{{ url_for('exportar_pdf', filtro_descricao=filtro_descricao, filtro_situacao=filtro_situacao) }}">Exportar para PDF</a> |
-        <a href="{{ url_for('logout') }}">Sair</a> {# Link para Logout #}
-    </p>
-
-    {# Formulário de Filtro (mantido como antes) #}
-    <h2>Filtrar Tarefas</h2>
-    <form method="GET" action="{{ url_for('listar_tarefas') }}">
-        <div>
-            <label for="filtro_descricao">Descrição:</label>
-            <input type="text" id="filtro_descricao" name="filtro_descricao" value="{{ filtro_descricao or '' }}">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">Tarefas</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('adicionar_tarefa') }}">➕ Nova</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('exportar_pdf', filtro_descricao=filtro_descricao, filtro_situacao=filtro_situacao) }}">📄 PDF</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">🚪 Sair</a></li>
+                </ul>
+            </div>
         </div>
-        <div>
-            <label for="filtro_situacao">Situação:</label>
-            <select id="filtro_situacao" name="filtro_situacao">
-                <option value="">-- Selecione --</option>
-                <option value="Pendente" {% if filtro_situacao == 'Pendente' %}selected{% endif %}>Pendente</option>
-                <option value="Em andamento" {% if filtro_situacao == 'Em andamento' %}selected{% endif %}>Em andamento</option>
-                <option value="Concluído" {% if filtro_situacao == 'Concluído' %}selected{% endif %}>Concluído</option>
-            </select>
+    </nav>
+
+    <div class="container">
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Filtro -->
+        <div class="card mb-4">
+            <div class="card-header">🔍 Filtrar Tarefas</div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('listar_tarefas') }}" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="filtro_descricao" class="form-label">Descrição</label>
+                        <input type="text" class="form-control" id="filtro_descricao" name="filtro_descricao" value="{{ filtro_descricao or '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="filtro_situacao" class="form-label">Situação</label>
+                        <select class="form-select" id="filtro_situacao" name="filtro_situacao">
+                            <option value="">-- Selecione --</option>
+                            <option value="Pendente" {% if filtro_situacao == 'Pendente' %}selected{% endif %}>Pendente</option>
+                            <option value="Em andamento" {% if filtro_situacao == 'Em andamento' %}selected{% endif %}>Em andamento</option>
+                            <option value="Concluído" {% if filtro_situacao == 'Concluído' %}selected{% endif %}>Concluído</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">Aplicar</button>
+                        <a href="{{ url_for('listar_tarefas') }}" class="btn btn-outline-secondary">Limpar</a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <button type="submit">Aplicar Filtro</button>
-        <a href="{{ url_for('listar_tarefas') }}"><button type="button">Limpar Filtros</button></a>
-    </form>
 
-    <hr>
+        <!-- Tabela de Tarefas -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover bg-white">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Descrição</th>
+                        <th>Criação</th>
+                        <th>Prevista</th>
+                        <th>Encerramento</th>
+                        <th>Situação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tarefa in tarefas %}
+                    <tr>
+                        <td>{{ tarefa.id }}</td>
+                        <td>{{ tarefa.descricao }}</td>
+                        <td>{{ tarefa.data_criacao }}</td>
+                        <td>{{ tarefa.data_prevista or '' }}</td>
+                        <td>{{ tarefa.data_encerramento or '' }}</td>
+                        <td>{{ tarefa.situacao }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_tarefa', id=tarefa.id) }}" class="btn btn-sm btn-warning">✏️</a>
+                            <form action="{{ url_for('excluir_tarefa', id=tarefa.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta tarefa?');">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Descrição</th>
-                <th>Data de Criação</th>
-                <th>Data Prevista</th>
-                <th>Data de Encerramento</th>
-                <th>Situação</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for tarefa in tarefas %}
-            <tr>
-                <td>{{ tarefa.id }}</td>
-                <td>{{ tarefa.descricao }}</td>
-                <td>{{ tarefa.data_criacao }}</td>
-                <td>{{ tarefa.data_prevista or '' }}</td>
-                <td>{{ tarefa.data_encerramento or '' }}</td>
-                <td>{{ tarefa.situacao }}</td>
-                <td>
-                    <a href="{{ url_for('editar_tarefa', id=tarefa.id) }}">Editar</a>
-                    <form action="{{ url_for('excluir_tarefa', id=tarefa.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir esta tarefa?');">Excluir</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -9,32 +9,22 @@ on:
 jobs:
   deploy-homolog:
     if: github.ref == 'refs/heads/homolog'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Deploy para Homologação
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOMOLOG_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd ~/homolog/GCS
-            git pull origin homolog
-            docker-compose down
-            docker-compose up -d --build
+      - name: Deploy automático para Homologação
+        run: |
+          cd ~/homolog/GCS
+          git pull origin homolog
+          sudo docker-compose down
+          sudo docker-compose up -d --build
 
   deploy-prod:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Deploy para Produção
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd ~/prod/GCS
-            git pull origin main
-            docker-compose down
-            docker-compose up -d --build
+      - name: Deploy automático para Produção
+        run: |
+          cd ~/prod/GCS
+          git pull origin main
+          sudo docker-compose down
+          sudo docker-compose up -d --build
