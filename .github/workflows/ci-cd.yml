@@ -14,17 +14,9 @@ jobs:
       - name: Deploy automático para Homologação
         run: |
           cd ~/homolog/GCS
+          git restore docker-compose.yml || true
           git pull origin homolog
-          sudo docker-compose down
-          sudo docker-compose up -d --build
+          sudo docker rm -f tarefas-homolog || true
+          sudo docker compose --env-file .env down --remove-orphans
+          sudo docker compose --env-file .env up -d --build
 
-  deploy-prod:
-    if: github.ref == 'refs/heads/main'
-    runs-on: self-hosted
-    steps:
-      - name: Deploy automático para Produção
-        run: |
-          cd ~/prod/GCS
-          git pull origin main
-          sudo docker-compose down
-          sudo docker-compose up -d --build
