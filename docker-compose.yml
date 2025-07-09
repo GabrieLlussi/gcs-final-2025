@@ -10,3 +10,9 @@ services:
     environment:
       - ENV=${ENV:-local}
     container_name: ${CONTAINER_NAME:-gcs-app}
+    networks:
+      - gcs_net
+
+networks:
+  gcs_net:
+    name: ${CONTAINER_NAME}_net
