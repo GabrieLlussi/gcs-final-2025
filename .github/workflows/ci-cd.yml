@@ -1,4 +1,4 @@
-name: CI/CD GCS - Deploy 
+name: CI/CD GCS - Deploy
 
 on:
   push:
@@ -14,6 +14,7 @@ jobs:
       - name: Deploy automático para Homologação
         run: |
           cd ~/homolog/GCS
+          git restore docker-compose.yml
           git pull origin homolog
           sudo docker-compose down
           sudo docker-compose up -d --build
@@ -25,6 +26,7 @@ jobs:
       - name: Deploy automático para Produção
         run: |
           cd ~/prod/GCS
+          git restore docker-compose.yml
           git pull origin main
           sudo docker-compose down
           sudo docker-compose up -d --build
