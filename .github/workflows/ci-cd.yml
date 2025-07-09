@@ -7,14 +7,16 @@ on:
       - main
 
 jobs:
-  deploy-homolog:
+    deploy-homolog:
     if: github.ref == 'refs/heads/homolog'
     runs-on: self-hosted
     steps:
       - name: Deploy automático para Homologação
         run: |
           cd ~/homolog/GCS
-          git restore docker-compose.yml
+          git restore docker-compose.yml || true
           git pull origin homolog
+          sudo docker rm -f tarefas-homolog || true
           sudo docker compose --env-file .env down --remove-orphans
           sudo docker compose --env-file .env up -d --build
+
