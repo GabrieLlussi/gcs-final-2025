@@ -9,4 +9,4 @@ services:
       - .:/app
     environment:
       - ENV=${ENV:-local}
-    container_name: gcs-app
+    container_name: ${CONTAINER_NAME:-gcs-app}
