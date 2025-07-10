@@ -11,12 +11,22 @@ jobs:
     if: github.ref == 'refs/heads/homolog'
     runs-on: self-hosted
     steps:
-      - name: Restaurar .env de backup
-        run: cp ~/homolog/.env.backup ~/homolog/GCS/.env
-
       - name: Deploy automático para Homologação
         run: |
           cd ~/homolog/GCS
+
+          echo ">>> Limpando conflitos locais..."
+          git reset --hard HEAD
+          git clean -fd
+
+          echo ">>> Atualizando repositório..."
           git pull origin homolog
-          sudo docker compose --env-file .env down
+
+          echo ">>> Removendo container antigo..."
+          sudo docker compose --env-file .env down || true
+
+          echo ">>> Subindo aplicação atualizada..."
           sudo docker compose --env-file .env up -d --build
+
+          echo ">>> Aplicando migrações Alembic..."
+          sudo docker exec tarefas-homolog alembic upgrade head
