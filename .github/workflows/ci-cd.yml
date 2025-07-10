@@ -1,4 +1,4 @@
-name: CI/CD GCS - Deploy 
+name: CI/CD GCS - Deploy
 
 on:
   push:
@@ -11,10 +11,12 @@ jobs:
     if: github.ref == 'refs/heads/homolog'
     runs-on: self-hosted
     steps:
+      - name: Restaurar .env de backup
+        run: cp ~/homolog/.env.backup ~/homolog/GCS/.env
+
       - name: Deploy automático para Homologação
         run: |
           cd ~/homolog/GCS
-          git restore docker-compose.yml
           git pull origin homolog
-          sudo docker compose --env-file .env down --remove-orphans
+          sudo docker compose --env-file .env down
           sudo docker compose --env-file .env up -d --build
