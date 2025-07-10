@@ -17,7 +17,7 @@ jobs:
 
           echo ">>> Limpando conflitos locais..."
           git reset --hard HEAD
-          git clean -fd
+          git clean -fd -e .env -e '*.db'
 
           echo ">>> Atualizando repositório..."
           git pull origin homolog
