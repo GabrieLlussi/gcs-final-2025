@@ -4,20 +4,19 @@ on:
   push:
     branches:
       - homolog
+      - main
 
 jobs:
   deploy-homolog:
+    if: github.ref == 'refs/heads/homolog'
     runs-on: self-hosted
     steps:
+      - name: Restaurar .env de backup
+        run: cp ~/homolog/.env.backup ~/homolog/GCS/.env
+
       - name: Deploy automático para Homologação
         run: |
           cd ~/homolog/GCS
-          echo ">>> Limpando arquivos não versionados..."
-          git restore .
-          git clean -fd
-          echo ">>> Atualizando repositório..."
           git pull origin homolog
-          echo ">>> Removendo container antigo..."
           sudo docker compose --env-file .env down
-          echo ">>> Subindo aplicação HOMOLOG com imagem nova..."
           sudo docker compose --env-file .env up -d --build
